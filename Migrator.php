@@ -7,12 +7,14 @@ use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Setup\SetupInterface;
 use Psr\Log\LoggerInterface;
 use SomethingDigital\Migration\Api\MigrationInterface;
+use SomethingDigital\Migration\Api\MigratorInterface;
 use SomethingDigital\Migration\Exception\LockException;
+use SomethingDigital\Migration\Exception\UsageException;
 use SomethingDigital\Migration\Model\Migration\Locator;
 use SomethingDigital\Migration\Model\Migration\Status;
 use SomethingDigital\Migration\Model\ResourceModel\Migration as MigrationResource;
 
-class Migrator
+class Migrator implements MigratorInterface
 {
     protected $locator;
     protected $resource;
@@ -102,7 +104,7 @@ class Migrator
      * Create a validated instance of a migration class.
      *
      * @param string $class Class name.
-     * @throws \UnexpectedValueException Class was not defined correctly.
+     * @throws UsageException Class was not defined correctly.
      * @return MigrationInterface
      */
     protected function makeMigrationInstance($class)
@@ -114,7 +116,7 @@ class Migrator
             return $instance;
         }
 
-        throw new \UnexpectedValueException('Migration ' . $class . ' must implement MigrationInterface.');
+        throw new UsageException(__('Migration %1 must implement MigrationInterface.', $class));
     }
 
     /**
