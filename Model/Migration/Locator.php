@@ -3,6 +3,7 @@
 namespace SomethingDigital\Migration\Model\Migration;
 
 use Magento\Framework\Module\Dir\Reader as ModuleDirReader;
+use Magento\Framework\Filesystem\Directory\Read as DirRead;
 use Magento\Framework\Filesystem\Directory\ReadFactory as DirReadFactory;
 
 class Locator
@@ -30,7 +31,11 @@ class Locator
     public function locate($moduleName, $type)
     {
         $path = $this->getFilesPath($moduleName, $type);
+        /** @var DirRead $directoryRead */
         $directoryRead = $this->dirReadFactory->create($path);
+        if (!$directoryRead->isExist()) {
+            return [];
+        }
 
         $namespace = $this->getClassNamespacePath($moduleName, $type);
         $migrations = [];
