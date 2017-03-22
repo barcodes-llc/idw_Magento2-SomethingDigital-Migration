@@ -86,7 +86,9 @@ class Page
         }
 
         $this->withStore($storeId, function () use ($page, $content, $extra) {
-            $page->setTitle($content);
+            if ($content !== null) {
+                $page->setContent($content);
+            }
             if (isset($extra['is_active'])) {
                 $page->setIsActive($extra['is_active']);
             }
@@ -116,8 +118,8 @@ class Page
      * Find a page for update or delete.
      *
      * @param string $identifier Page text identifier.
-     * @param int $storeId Store id.
-     * @throws UsageException Page not found.
+     * @param int|string $storeId Store id.
+     * @throws UsageException Multiple pages found.
      * @return PageInterface|null
      */
     protected function find($identifier, $storeId = Store::ADMIN_CODE)

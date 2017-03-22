@@ -83,7 +83,9 @@ class Block
         }
 
         $this->withStore($storeId, function () use ($block, $content, $extra) {
-            $block->setTitle($content);
+            if ($content !== null) {
+                $block->setContent($content);
+            }
             if (isset($extra['is_active'])) {
                 $block->setIsActive($extra['is_active']);
             }
@@ -110,8 +112,8 @@ class Block
      * Find a block for update or delete.
      *
      * @param string $identifier Block text identifier.
-     * @param int $storeId Store id.
-     * @throws UsageException Block not found.
+     * @param int|string $storeId Store id.
+     * @throws UsageException Multiple blocks found.
      * @return BlockInterface|null
      */
     protected function find($identifier, $storeId = Store::ADMIN_CODE)
