@@ -5,6 +5,7 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
+                <item name="migrate:make" xsi:type="object">SomethingDigital\Migration\Console\MakeCommand</item>
                 <item name="migrate:retry" xsi:type="object">SomethingDigital\Migration\Console\RetryCommand</item>
             </argument>
         </arguments>

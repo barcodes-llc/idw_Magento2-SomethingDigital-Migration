@@ -2,9 +2,9 @@
 
 namespace SomethingDigital\Migration\Model\Migration;
 
-use Magento\Framework\Module\Dir\Reader as ModuleDirReader;
 use Magento\Framework\Filesystem\Directory\Read as DirRead;
 use Magento\Framework\Filesystem\Directory\ReadFactory as DirReadFactory;
+use Magento\Framework\Module\Dir\Reader as ModuleDirReader;
 
 class Locator
 {
@@ -37,7 +37,8 @@ class Locator
             return [];
         }
 
-        $namespace = $this->getClassNamespacePath($moduleName, $type);
+        // Add the \ at the end for convenience.
+        $namespace = $this->getClassNamespacePath($moduleName, $type) . '\\';
         $migrations = [];
         foreach ($directoryRead->read() as $entry) {
             // The name is simply the filename, without .php.  It must end in .php, though.
@@ -63,23 +64,24 @@ class Locator
     public function getFilesPath($moduleName, $type)
     {
         $moduleDir = $this->moduleDirReader->getModuleDir('', $moduleName);
+        if (!$moduleDir) {
+            throw new \UnexpectedValueException('No module dir for module: ' . $moduleName);
+        }
         return $moduleDir . '/' . static::MIGRATION_PATH_COMPONENT . '/' . $this->getTypePathComponent($type);
     }
 
     /**
      * Determine the module class namespace for migration classes.
      *
-     * Ends in a trailing \.
-     *
      * @param mixed $moduleName Name of Magento module, i.e. 'SomethingDigital_Migration'.
      * @param string $type 'data' or 'schema'.
      * @return string
      */
-    protected function getClassNamespacePath($moduleName, $type)
+    public function getClassNamespacePath($moduleName, $type)
     {
         // From Magento\Setup\Model\Installer's logic.
         $namespace = str_replace('_', '\\', $moduleName);
-        return $namespace . '\\' . static::MIGRATION_PATH_COMPONENT . '\\' . $this->getTypePathComponent($type) . '\\';
+        return $namespace . '\\' . static::MIGRATION_PATH_COMPONENT . '\\' . $this->getTypePathComponent($type);
     }
 
     /**
