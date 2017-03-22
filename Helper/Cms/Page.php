@@ -9,13 +9,21 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use SomethingDigital\Migration\Exception\UsageException;
+use SomethingDigital\Migration\Helper\AbstractHelper;
 
-class Page
+/**
+ * Page helper
+ *
+ * Extra fields:
+ *  - is_active: To set to.
+ *  - store_id: To set to, and also for lookup on update.
+ *  - custom_root_template: Design root template.
+ */
+class Page extends AbstractHelper
 {
     protected $pageRepo;
     protected $pageFactory;
     protected $searchCriteriaBuilder;
-    protected $storeManager;
 
     public function __construct(
         PageRepositoryInterface $pageRepo,
@@ -23,29 +31,42 @@ class Page
         SearchCriteriaBuilder $searchCriteriaBuilder,
         StoreManagerInterface $storeManager
     ) {
+        parent::__construct($storeManager);
+
         $this->pageRepo = $pageRepo;
         $this->pageFactory = $pageFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->storeManager = $storeManager;
     }
 
-    protected function withStore($storeId, $func)
-    {
-        $currentStore = $this->storeManager->getStore()->getId();
-        $this->storeManager->setCurrentStore($storeId);
-        try {
-            return $func();
-        } finally {
-            $this->storeManager->setCurrentStore($currentStore);
-        }
-    }
-
+    /**
+     * DELETE the original page and create a new one.
+     *
+     * Used to reset settings.  Consider using update() instead.
+     *
+     * See class definition for extra fields.
+     *
+     * @param string $identifier Identifier code.
+     * @param string $title Title to set.
+     * @param string $content Contents to set.
+     * @param mixed[] $extra Extra fields to set.
+     */
     public function replace($identifier, $title, $content = '', array $extra = [])
     {
-        $this->delete($identifier, false);
+        $storeId = isset($extra['store_id']) ? $extra['store_id'] : Store::ADMIN_CODE;
+        $this->delete($identifier, $storeId, false);
         $this->create($identifier, $title, $content, $extra);
     }
 
+    /**
+     * Create a new page.
+     *
+     * See class definition for extra fields.
+     *
+     * @param string $identifier Identifier code.
+     * @param string $title Title to set.
+     * @param string $content Contents to set.
+     * @param mixed[] $extra Extra fields to set.
+     */
     public function create($identifier, $title, $content = '', array $extra = [])
     {
         // PageRepository sets the current store id.
@@ -65,6 +86,14 @@ class Page
         });
     }
 
+    /**
+     * Rename a page's title.
+     *
+     * @param string $identifier Identifier code.
+     * @param string $title Title to set.
+     * @param int|string $storeId Store id or code to find the page.
+     * @throws UsageException Page not found for update.
+     */
     public function rename($identifier, $title, $storeId = Store::ADMIN_CODE)
     {
         $page = $this->find($identifier, $storeId);
@@ -78,8 +107,17 @@ class Page
         });
     }
 
-    public function update($identifier, $content, array $extra = [], $storeId = Store::ADMIN_CODE)
+    /**
+     * Update a page's content or fields.
+     *
+     * @param string $identifier Identifier code.
+     * @param string|null $content Updated content, or null to skip update.
+     * @param mixed[] $extra Extra fields to set, and store_id for lookup.
+     * @throws UsageException Page not found for update.
+     */
+    public function update($identifier, $content, array $extra = [])
     {
+        $storeId = isset($extra['store_id']) ? $extra['store_id'] : Store::ADMIN_CODE;
         $page = $this->find($identifier, $storeId);
         if ($page === null) {
             throw new UsageException(__('Page %s was not found', $identifier));
@@ -99,6 +137,14 @@ class Page
         });
     }
 
+    /**
+     * Delete a page.
+     *
+     * @param string $identifier Identifier code.
+     * @param int|string $storeId Store id or code to find the page.
+     * @param bool $requireExists Whether to fail if it doesn't exist.
+     * @throws UsageException Page not found for delete.
+     */
     public function delete($identifier, $storeId = Store::ADMIN_CODE, $requireExists = false)
     {
         $page = $this->find($identifier, $storeId);
