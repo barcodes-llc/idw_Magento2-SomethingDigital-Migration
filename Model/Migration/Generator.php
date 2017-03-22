@@ -24,16 +24,19 @@ use Magento\Framework\Setup\SetupInterface;
 use SomethingDigital\Migration\Api\MigrationInterface;
 use SomethingDigital\Migration\Helper\Cms\Page as PageHelper;
 use SomethingDigital\Migration\Helper\Cms\Block as BlockHelper;
+use SomethingDigital\Migration\Helper\Email\Template as EmailHelper;
 
 class ' . $name . ' implements MigrationInterface
 {
     protected $page;
     protected $block;
+    protected $email;
 
-    public function __construct(PageHelper $page, BlockHelper $block)
+    public function __construct(PageHelper $page, BlockHelper $block, EmailHelper $email)
     {
         $this->page = $page;
         $this->block = $block;
+        $this->email = $email;
     }
 
     public function execute(SetupInterface $setup)
