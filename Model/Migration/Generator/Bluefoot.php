@@ -5,17 +5,17 @@ namespace SomethingDigital\Migration\Model\Migration\Generator;
 use SomethingDigital\Migration\Model\Migration\GeneratorInterface;
 use SomethingDigital\Migration\Model\AbstractGenerator;
 
-class Standard extends AbstractGenerator implements GeneratorInterface
+class Bluefoot extends AbstractGenerator implements GeneratorInterface
 {
-    const NAME = 'standard';
+    const NAME = 'bluefoot';
 
     public function create($namespace, $filePath, $name, $options = [])
     {
-        $code = $this->makeCode($namespace, $name);
+        $code = $this->makeCode($namespace, $name, $options);
         $this->writeCode($filePath, $name, $code);
     }
 
-    protected function makeCode($namespace, $name)
+    protected function makeCode($namespace, $name, $options)
     {
         return '<?php
 

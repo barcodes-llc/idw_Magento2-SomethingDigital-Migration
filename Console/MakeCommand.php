@@ -3,10 +3,10 @@
 namespace SomethingDigital\Migration\Console;
 
 use SomethingDigital\Migration\Model\Migration\Christener;
-use SomethingDigital\Migration\Model\Migration\Generator;
 use SomethingDigital\Migration\Model\Migration\Locator;
 use SomethingDigital\Migration\Model\Setup\Generator as SetupGenerator;
 use SomethingDigital\Migration\Console\Input\ParserPool as InputParserPool;
+use SomethingDigital\Migration\Model\Migration\GeneratorPool as MigrationGeneratorPool;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,25 +16,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeCommand extends Command
 {
     protected $christener;
-    protected $generator;
     protected $locator;
     protected $setupGenerator;
     protected $inputParserPool;
+    protected $migrationGeneratorPool;
 
     public function __construct(
         Christener $christener,
-        Generator $generator,
         Locator $locator,
         SetupGenerator $setupGenerator,
-        InputParserPool $inputParserPool
+        InputParserPool $inputParserPool,
+        MigrationGeneratorPool $migrationGeneratorPool
     ) {
         parent::__construct(null);
 
         $this->christener = $christener;
-        $this->generator = $generator;
         $this->locator = $locator;
         $this->setupGenerator = $setupGenerator;
         $this->inputParserPool = $inputParserPool;
+        $this->migrationGeneratorPool = $migrationGeneratorPool;
     }
 
     protected function configure()
@@ -72,7 +72,8 @@ class MakeCommand extends Command
         $filePath = $this->locator->getFilesPath($options->getModule(), $options->getType());
         $namespace = $this->locator->getClassNamespacePath($options->getModule(), $options->getType());
 
-        $this->generator->create($namespace, $filePath, $name);
+        $migrationGenerator = $this->migrationGeneratorPool->get($options->getGenerator());
+        $migrationGenerator->create($namespace, $filePath, $name, $options);
 
         return $filePath . '/' . $name . '.php';
     }

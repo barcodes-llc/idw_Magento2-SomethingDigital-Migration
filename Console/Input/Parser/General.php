@@ -3,6 +3,7 @@
 namespace SomethingDigital\Migration\Console\Input\Parser;
 
 use SomethingDigital\Migration\Console\Input\ParserInterface;
+use SomethingDigital\Migration\Model\Migration\Generator\Standard as GeneratorStandard;
 use Symfony\Component\Console\Input\InputInterface;
 use Magento\Framework\DataObject;
 
@@ -21,7 +22,7 @@ class General implements ParserInterface
         $result->setModule($input->getOption('module'));
         $result->setType($input->getOption('type'));
         $result->setName($input->getArgument('name'));
-        $result->setGenerator('general');
+        $result->setGenerator(GeneratorStandard::NAME);
         return $result;
     }
 }

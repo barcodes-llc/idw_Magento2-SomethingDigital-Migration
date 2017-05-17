@@ -18,4 +18,12 @@
             </argument>
         </arguments>
     </type>
+    <type name="SomethingDigital\Migration\Model\Migration\GeneratorFactory">
+        <arguments>
+            <argument name="generators" xsi:type="array">
+                <item name="standard" xsi:type="string">SomethingDigital\Migration\Model\Migration\Generator\Standard</item>
+                <item name="bluefoot" xsi:type="string">SomethingDigital\Migration\Model\Migration\Generator\Bluefoot</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
