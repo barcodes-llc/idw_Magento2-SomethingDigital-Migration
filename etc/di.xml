@@ -10,4 +10,12 @@
             </argument>
         </arguments>
     </type>
+    <type name="SomethingDigital\Migration\Console\Input\ParserFactory">
+        <arguments>
+            <argument name="parsers" xsi:type="array">
+                <item name="general" xsi:type="string">SomethingDigital\Migration\Console\Input\Parser\General</item>
+                <item name="bluefoot" xsi:type="string">SomethingDigital\Migration\Console\Input\Parser\Bluefoot</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
