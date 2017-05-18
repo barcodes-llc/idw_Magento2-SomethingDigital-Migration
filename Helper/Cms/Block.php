@@ -2,7 +2,7 @@
 
 namespace SomethingDigital\Migration\Helper\Cms;
 
-use Magento\Cms\Api\BlockRepositoryInterface;
+use SomethingDigital\Migration\Model\Cms\BlockRepository;
 use Magento\Cms\Api\Data\BlockInterface;
 use Magento\Cms\Api\Data\BlockInterfaceFactory as BlockFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -25,7 +25,7 @@ class Block extends AbstractHelper
     protected $searchCriteriaBuilder;
 
     public function __construct(
-        BlockRepositoryInterface $blockRepo,
+        BlockRepository $blockRepo,
         BlockFactory $blockFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         StoreManagerInterface $storeManager

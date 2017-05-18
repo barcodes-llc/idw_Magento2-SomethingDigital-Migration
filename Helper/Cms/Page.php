@@ -2,7 +2,7 @@
 
 namespace SomethingDigital\Migration\Helper\Cms;
 
-use Magento\Cms\Api\PageRepositoryInterface;
+use SomethingDigital\Migration\Model\Cms\PageRepository;
 use Magento\Cms\Api\Data\PageInterface;
 use Magento\Cms\Api\Data\PageInterfaceFactory as PageFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -26,7 +26,7 @@ class Page extends AbstractHelper
     protected $searchCriteriaBuilder;
 
     public function __construct(
-        PageRepositoryInterface $pageRepo,
+        PageRepository $pageRepo,
         PageFactory $pageFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         StoreManagerInterface $storeManager

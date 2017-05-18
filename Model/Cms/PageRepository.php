@@ -11,6 +11,8 @@ class PageRepository extends BasePageRepository implements PageRepositoryInterfa
     /**
      * Load Page data collection by given search criteria
      *
+     * Override to change data in SearchResult object. By default it is array of data arrays. Now it is array of objects.
+     *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
@@ -45,21 +47,9 @@ class PageRepository extends BasePageRepository implements PageRepositoryInterfa
         }
         $collection->setCurPage($criteria->getCurrentPage());
         $collection->setPageSize($criteria->getPageSize());
-        $pages = [];
-        /** @var Page $pageModel */
-        foreach ($collection as $pageModel) {
-            $pageData = $this->dataPageFactory->create();
-            $this->dataObjectHelper->populateWithArray(
-                $pageData,
-                $pageModel->getData(),
-                'Magento\Cms\Api\Data\PageInterface'
-            );
-            $pages[] = $this->dataObjectProcessor->buildOutputDataArray(
-                $pageData,
-                'Magento\Cms\Api\Data\PageInterface'
-            );
-        }
-        $searchResults->setItems($pages);
+        // CHANGES START
+        $searchResults->setItems($collection->getItems());
+        // CHANGES END
         return $searchResults;
     }
 }

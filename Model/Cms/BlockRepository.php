@@ -11,6 +11,8 @@ class BlockRepository extends BaseBlockRepository implements BlockRepositoryInte
     /**
      * Load Block data collection by given search criteria
      *
+     * Override to change data in SearchResult object. By default it is array of data arrays. Now it is array of objects.
+     *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
@@ -44,21 +46,9 @@ class BlockRepository extends BaseBlockRepository implements BlockRepositoryInte
         }
         $collection->setCurPage($criteria->getCurrentPage());
         $collection->setPageSize($criteria->getPageSize());
-        $blocks = [];
-        /** @var Block $blockModel */
-        foreach ($collection as $blockModel) {
-            $blockData = $this->dataBlockFactory->create();
-            $this->dataObjectHelper->populateWithArray(
-                $blockData,
-                $blockModel->getData(),
-                'Magento\Cms\Api\Data\BlockInterface'
-            );
-            $blocks[] = $this->dataObjectProcessor->buildOutputDataArray(
-                $blockData,
-                'Magento\Cms\Api\Data\BlockInterface'
-            );
-        }
-        $searchResults->setItems($blocks);
+        // CHANGES START
+        $searchResults->setItems($collection->getItems());
+        // CHANGES END
         return $searchResults;
     }
 }
