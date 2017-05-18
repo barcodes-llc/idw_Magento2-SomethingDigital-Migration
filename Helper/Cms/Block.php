@@ -94,7 +94,7 @@ class Block extends AbstractHelper
     {
         $block = $this->find($identifier, $storeId);
         if ($block === null) {
-            throw new UsageException(__('Block %s was not found', $identifier));
+            throw new UsageException(__('Block %1 was not found', $identifier));
         }
 
         $this->withStore($storeId, function () use ($block, $title) {
@@ -116,7 +116,7 @@ class Block extends AbstractHelper
         $storeId = isset($extra['store_id']) ? $extra['store_id'] : Store::ADMIN_CODE;
         $block = $this->find($identifier, $storeId);
         if ($block === null) {
-            throw new UsageException(__('Block %s was not found', $identifier));
+            throw new UsageException(__('Block %1 was not found', $identifier));
         }
 
         $this->withStore($storeId, function () use ($block, $content, $extra) {
@@ -143,7 +143,7 @@ class Block extends AbstractHelper
         $block = $this->find($identifier, $storeId);
         if ($block === null) {
             if ($requireExists) {
-                throw new UsageException(__('Block %s was not found', $identifier));
+                throw new UsageException(__('Block %1 was not found', $identifier));
             }
             return;
         }
@@ -172,7 +172,7 @@ class Block extends AbstractHelper
         if ($count == 0) {
             return null;
         } elseif ($count > 1) {
-            throw new UsageException('Found multiple matching blocks.');
+            throw new UsageException(__('Found multiple matching blocks.'));
         }
 
         foreach ($results->getItems() as $block) {

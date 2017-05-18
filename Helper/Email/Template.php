@@ -86,7 +86,7 @@ class Template extends AbstractHelper
     {
         $template = $this->find($identifier);
         if ($template === null) {
-            throw new UsageException(__('Template %s was not found', $identifier));
+            throw new UsageException(__('Template %1 was not found', $identifier));
         }
 
         $template->setTemplateSubject($subject);
@@ -105,7 +105,7 @@ class Template extends AbstractHelper
     {
         $template = $this->find($identifier);
         if ($template === null) {
-            throw new UsageException(__('Template %s was not found', $identifier));
+            throw new UsageException(__('Template %1 was not found', $identifier));
         }
 
         if ($content !== null) {
@@ -127,7 +127,7 @@ class Template extends AbstractHelper
         $template = $this->find($identifier);
         if ($template === null) {
             if ($requireExists) {
-                throw new UsageException(__('Template %s was not found', $identifier));
+                throw new UsageException(__('Template %1 was not found', $identifier));
             }
             return;
         }
