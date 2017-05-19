@@ -4,10 +4,27 @@ namespace SomethingDigital\Migration\Model\Migration\Generator;
 
 use SomethingDigital\Migration\Model\Migration\GeneratorInterface;
 use SomethingDigital\Migration\Model\AbstractGenerator;
+use Magento\Framework\Filesystem\Directory\WriteFactory;
+use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot\PageFactory;
+use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot\BlockFactory;
 
 class Bluefoot extends AbstractGenerator implements GeneratorInterface
 {
     const NAME = 'bluefoot';
+    const CMS_ENTITY_PAGE = 'page';
+    const CMS_ENTITY_BLOCK = 'block';
+    const OPERATION_CREATE = 'create';
+    const OPERATION_UPDATE = 'update';
+
+    protected $pageGeneratorFactory;
+    protected $blockGeneratorFactory;
+
+    public function __construct(WriteFactory $dirWriteFactory, PageFactory $pageGeneratorFactory, BlockFactory $blockGeneratorFactory)
+    {
+        $this->pageGeneratorFactory = $pageGeneratorFactory;
+        $this->blockGeneratorFactory = $blockGeneratorFactory;
+        parent::__construct($dirWriteFactory);
+    }
 
     public function create($namespace, $filePath, $name, $options = [])
     {
@@ -15,8 +32,41 @@ class Bluefoot extends AbstractGenerator implements GeneratorInterface
         $this->writeCode($filePath, $name, $code);
     }
 
+    /**
+     * Instantiate CMS entity generator object (block or page)
+     *
+     * @param \Magento\Framework\DataObject $options
+     * @return \SomethingDigital\Migration\Model\Migration\Generator\Bluefoot\GeneratorInterface
+     * @throws \InvalidArgumentException
+     */
+    protected function getCmsEntityGenerator($options)
+    {
+        $cmsEntityGenerator = null;
+        switch ($options->getCmsEntityType()) {
+            case static::CMS_ENTITY_PAGE:
+                $cmsEntityGenerator = $this->pageGeneratorFactory->create();
+                break;
+            case static::CMS_ENTITY_BLOCK:
+                $cmsEntityGenerator = $this->blockGeneratorFactory->create();
+                break;
+            default:
+                throw new \InvalidArgumentException("Unknown migration generator cms entity type: '{$options->getCmsEntityType()}'. Could be 'block' or 'page'.");
+                break;
+        }
+        return $cmsEntityGenerator;
+    }
+
+    /**
+     * Generate full migration class code
+     *
+     * @param string $namespace
+     * @param string $name
+     * @param \Magento\Framework\DataObject $options
+     * @return string
+     */
     protected function makeCode($namespace, $name, $options)
     {
+        $code = $this->getCmsEntityGenerator($options)->makeCode($options);
         return '<?php
 
 namespace ' . $namespace . ';
@@ -45,7 +95,7 @@ class ' . $name . ' implements MigrationInterface
 
     public function execute(SetupInterface $setup)
     {
-        // TODO: $this->page->create(\'identifer\', \'Title\', \'<p>Content</p>\');
+        ' . $code . '
     }
 }
 ';

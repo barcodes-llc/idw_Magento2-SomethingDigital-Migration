@@ -21,23 +21,23 @@ class Bluefoot implements ParserInterface
     {
         if ($blockIdentifier = $input->getOption('update-from-block')) {
             $result->setGenerator(GeneratorBluefoot::NAME);
-            $result->setMigrationOperation('update');
-            $result->setCmsEntityType('block');
+            $result->setMigrationOperation(GeneratorBluefoot::OPERATION_UPDATE);
+            $result->setCmsEntityType(GeneratorBluefoot::CMS_ENTITY_BLOCK);
             $result->setCmsEntityIdentifier($blockIdentifier);
         } elseif ($blockIdentifier = $input->getOption('create-from-block')) {
             $result->setGenerator(GeneratorBluefoot::NAME);
-            $result->setMigrationOperation('create');
-            $result->setCmsEntityType('block');
+            $result->setMigrationOperation(GeneratorBluefoot::OPERATION_CREATE);
+            $result->setCmsEntityType(GeneratorBluefoot::CMS_ENTITY_BLOCK);
             $result->setCmsEntityIdentifier($blockIdentifier);
         } elseif ($pageIdentifier = $input->getOption('update-from-page')) {
             $result->setGenerator(GeneratorBluefoot::NAME);
-            $result->setMigrationOperation('update');
-            $result->setCmsEntityType('page');
+            $result->setMigrationOperation(GeneratorBluefoot::OPERATION_UPDATE);
+            $result->setCmsEntityType(GeneratorBluefoot::CMS_ENTITY_PAGE);
             $result->setCmsEntityIdentifier($pageIdentifier);
         } elseif ($pageIdentifier = $input->getOption('create-from-page')) {
             $result->setGenerator(GeneratorBluefoot::NAME);
-            $result->setMigrationOperation('create');
-            $result->setCmsEntityType('page');
+            $result->setMigrationOperation(GeneratorBluefoot::OPERATION_CREATE);
+            $result->setCmsEntityType(GeneratorBluefoot::CMS_ENTITY_PAGE);
             $result->setCmsEntityIdentifier($pageIdentifier);
         }
         return $result;
