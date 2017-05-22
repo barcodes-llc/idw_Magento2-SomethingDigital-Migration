@@ -5,18 +5,22 @@ namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use Gene\BlueFoot\Api\EntityRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Escaper;
 
 class Entity
 {
     protected $bluefootEntityRepo;
     protected $searchCriteriaBuilder;
+    protected $escaper;
 
     public function __construct(
         EntityRepositoryInterface $bluefootEntityRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        Escaper $escaper
     ) {
         $this->bluefootEntityRepo = $bluefootEntityRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -89,7 +93,7 @@ class Entity
                     continue;
                 }
                 $code .= '
-            \'' . $key . '\' => \'' . $value . '\',';
+            \'' . $key . '\' => \'' . $this->escaper->escapeJsQuote($value) . '\',';
             }
             $code .= '
         ];
@@ -121,7 +125,7 @@ class Entity
                     continue;
                 }
                 $code .= '
-            \'' . $key . '\' => \'' . $value . '\',';
+            \'' . $key . '\' => \'' . $this->escaper->escapeJsQuote($value) . '\',';
             }
             $code .= '
             \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)

@@ -5,21 +5,25 @@ namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use SomethingDigital\Migration\Model\Cms\BlockRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Escaper;
 
 class Block implements GeneratorInterface
 {
     protected $bluefootEntityGenerator;
     protected $blockRepo;
     protected $searchCriteriaBuilder;
+    protected $escaper;
 
     public function __construct(
         Entity $bluefootEntityGenerator,
         BlockRepository $blockRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        Escaper $escaper
     ) {
         $this->bluefootEntityGenerator = $bluefootEntityGenerator;
         $this->blockRepo = $blockRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -88,7 +92,9 @@ class Block implements GeneratorInterface
      */
     protected function makeBluefootEntitiesCode($block, $options)
     {
-        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($block->getContent(), $options);
+        // make quotation for content here because $this->bluefootEntityGenerator->makeCode() returns content
+        // concatenated with php-variables
+        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($this->escaper->escapeJsQuote($block->getContent()), $options);
         // update block content to display it in generated code, do not save it
         $block->setContent($content);
         return $bluefootEntitiesCode;
@@ -104,7 +110,7 @@ class Block implements GeneratorInterface
     {
         return '
         $extraData = [
-            \'title\' => \'' . $block->getTitle() . '\',
+            \'title\' => \'' . $this->escaper->escapeJsQuote($block->getTitle()) . '\',
             \'is_active\' => \'' . $block->getIsActive() . '\',
             \'stores\' => [' . implode(',', $block->getStores()) . ']
         ];
@@ -123,7 +129,8 @@ class Block implements GeneratorInterface
         $code = '';
         if ($options->getMigrationOperation() == BluefootGenerator::OPERATION_CREATE) {
             $code = '
-        $this->block->create(\'' . $block->getIdentifier() . '\', \'' . $block->getTitle() . '\', \'' . $block->getContent() . '\', $extraData);
+        $this->block->create(\'' . $block->getIdentifier() . '\', \'' . $this->escaper->escapeJsQuote($block->getTitle()) . '\', '
+                . '\'' . $block->getContent() . '\', $extraData);
 ';
         } elseif ($options->getMigrationOperation() == BluefootGenerator::OPERATION_UPDATE) {
             $code = '

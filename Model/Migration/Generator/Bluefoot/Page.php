@@ -5,21 +5,25 @@ namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use SomethingDigital\Migration\Model\Cms\PageRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Escaper;
 
 class Page implements GeneratorInterface
 {
     protected $bluefootEntityGenerator;
     protected $pageRepo;
     protected $searchCriteriaBuilder;
+    protected $escaper;
 
     public function __construct(
         Entity $bluefootEntityGenerator,
         PageRepository $pageRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        Escaper $escaper
     ) {
         $this->bluefootEntityGenerator = $bluefootEntityGenerator;
         $this->pageRepo = $pageRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -88,7 +92,9 @@ class Page implements GeneratorInterface
      */
     protected function makeBluefootEntitiesCode($page, $options)
     {
-        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($page->getContent(), $options);
+        // make quotation for content here because $this->bluefootEntityGenerator->makeCode() returns content
+        // concatenated with php-variables
+        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($this->escaper->escapeJsQuote($page->getContent()), $options);
         // update page content to display it in generated code, do not save it
         $page->setContent($content);
         return $bluefootEntitiesCode;
@@ -104,12 +110,12 @@ class Page implements GeneratorInterface
     {
         return '
         $extraData = [
-            \'title\' => \'' . $page->getTitle() . '\',
+            \'title\' => \'' . $this->escaper->escapeJsQuote($page->getTitle()) . '\',
             \'page_layout\' => \'' . $page->getPageLayout() . '\',
-            \'meta_title\' => \'' . $page->getMetaTitle() . '\',
-            \'meta_keywords\' => \'' . $page->getMetaKeywords() . '\',
-            \'meta_description\' => \'' . $page->getMetaDescription() . '\',
-            \'content_heading\' => \'' . $page->getContentHeading() . '\',
+            \'meta_title\' => \'' . $this->escaper->escapeJsQuote($page->getMetaTitle()) . '\',
+            \'meta_keywords\' => \'' . $this->escaper->escapeJsQuote($page->getMetaKeywords()) . '\',
+            \'meta_description\' => \'' . $this->escaper->escapeJsQuote($page->getMetaDescription()) . '\',
+            \'content_heading\' => \'' . $this->escaper->escapeJsQuote($page->getContentHeading()) . '\',
             \'layout_update_xml\' => \'' . $page->getLayoutUpdateXml() . '\',
             \'custom_theme\' => \'' . $page->getCustomTheme() . '\',
             \'custom_root_template\' => \'' . $page->getCustomRootTemplate() . '\',
@@ -131,7 +137,8 @@ class Page implements GeneratorInterface
         $code = '';
         if ($options->getMigrationOperation() == BluefootGenerator::OPERATION_CREATE) {
             $code = '
-        $this->page->create(\'' . $page->getIdentifier() . '\', \'' . $page->getTitle() . '\', \'' . $page->getContent() . '\', $extraData);
+        $this->page->create(\'' . $page->getIdentifier() . '\', \'' . $this->escaper->escapeJsQuote($page->getTitle()) . '\', '
+                . '\'' . $page->getContent() . '\', $extraData);
 ';
         } elseif ($options->getMigrationOperation() == BluefootGenerator::OPERATION_UPDATE) {
             $code = '
