@@ -126,9 +126,8 @@ class Entity
             $code .= '
             \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
         ];
-        $bluefootEntity' . $bluefootEntity->getId() . ' = $this->bluefoot->update(' . $bluefootEntity->getId() . ', $data' . $bluefootEntity->getId() . ');
+        $this->bluefoot->update(' . $bluefootEntity->getId() . ', $data' . $bluefootEntity->getId() . ');
 ';
-            $content = str_replace('"entityId":"' . $bluefootEntity->getId() . '"', '"entityId":"\' . $bluefootEntity' . $bluefootEntity->getId() . ' . \'"', $content);
         }
         return [$content, $code];
     }
