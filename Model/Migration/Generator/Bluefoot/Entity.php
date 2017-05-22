@@ -124,6 +124,7 @@ class Entity
             \'' . $key . '\' => \'' . $value . '\',';
             }
             $code .= '
+            \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
         ];
         $bluefootEntity' . $bluefootEntity->getId() . ' = $this->bluefoot->update(' . $bluefootEntity->getId() . ', $data' . $bluefootEntity->getId() . ');
 ';
