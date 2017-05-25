@@ -10,7 +10,7 @@ interface GeneratorInterface
      * @param string $namespace
      * @param string $filePath
      * @param string $name
-     * @param array $options
+     * @param \Magento\Framework\DataObject $options
      */
-    public function create($namespace, $filePath, $name, $options = []);
+    public function create($namespace, $filePath, $name, \Magento\Framework\DataObject $options);
 }

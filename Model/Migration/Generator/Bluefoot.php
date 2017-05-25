@@ -4,7 +4,7 @@ namespace SomethingDigital\Migration\Model\Migration\Generator;
 
 use SomethingDigital\Migration\Model\Migration\GeneratorInterface;
 use SomethingDigital\Migration\Model\AbstractGenerator;
-use Magento\Framework\Filesystem\Directory\WriteFactory;
+use Magento\Framework\Filesystem\Directory\WriteFactory as DirWriteFactory;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot\PageFactory;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot\BlockFactory;
 
@@ -19,14 +19,14 @@ class Bluefoot extends AbstractGenerator implements GeneratorInterface
     protected $pageGeneratorFactory;
     protected $blockGeneratorFactory;
 
-    public function __construct(WriteFactory $dirWriteFactory, PageFactory $pageGeneratorFactory, BlockFactory $blockGeneratorFactory)
+    public function __construct(DirWriteFactory $dirWriteFactory, PageFactory $pageGeneratorFactory, BlockFactory $blockGeneratorFactory)
     {
         $this->pageGeneratorFactory = $pageGeneratorFactory;
         $this->blockGeneratorFactory = $blockGeneratorFactory;
         parent::__construct($dirWriteFactory);
     }
 
-    public function create($namespace, $filePath, $name, $options = [])
+    public function create($namespace, $filePath, $name, \Magento\Framework\DataObject $options)
     {
         $code = $this->makeCode($namespace, $name, $options);
         $this->writeCode($filePath, $name, $code);

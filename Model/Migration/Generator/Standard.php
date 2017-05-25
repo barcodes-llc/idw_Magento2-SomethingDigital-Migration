@@ -9,7 +9,7 @@ class Standard extends AbstractGenerator implements GeneratorInterface
 {
     const NAME = 'standard';
 
-    public function create($namespace, $filePath, $name, $options = [])
+    public function create($namespace, $filePath, $name, \Magento\Framework\DataObject $options)
     {
         $code = $this->makeCode($namespace, $name);
         $this->writeCode($filePath, $name, $code);
