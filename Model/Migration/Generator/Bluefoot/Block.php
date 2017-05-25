@@ -5,7 +5,7 @@ namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use SomethingDigital\Migration\Model\Cms\BlockRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Escaper;
+use SomethingDigital\Migration\Model\Migration\Generator\Escaper;
 
 class Block implements GeneratorInterface
 {
@@ -94,7 +94,7 @@ class Block implements GeneratorInterface
     {
         // make quotation for content here because $this->bluefootEntityGenerator->makeCode() returns content
         // concatenated with php-variables
-        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($this->escaper->escapeJsQuote($block->getContent()), $options);
+        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($this->escaper->escapeQuote($block->getContent()), $options);
         // update block content to display it in generated code, do not save it
         $block->setContent($content);
         return $bluefootEntitiesCode;
@@ -110,9 +110,9 @@ class Block implements GeneratorInterface
     {
         return '
         $extraData = [
-            \'title\' => \'' . $this->escaper->escapeJsQuote($block->getTitle()) . '\',
-            \'is_active\' => \'' . $block->getIsActive() . '\',
-            \'stores\' => [' . implode(',', $block->getStores()) . ']
+            \'title\' => ' . $this->escaper->escapeQuote($block->getTitle()) . ',
+            \'is_active\' => ' . (int) $block->getIsActive() . ',
+            \'stores\' => [' . implode(', ', $block->getStores()) . ']
         ];
 ';
     }
@@ -126,15 +126,16 @@ class Block implements GeneratorInterface
      */
     protected function makeBlockCode($block, $options)
     {
+        // $block->getContent() contains already escaped string, it also wrapped with single quotes
         $code = '';
         if ($options->getMigrationOperation() == BluefootGenerator::OPERATION_CREATE) {
             $code = '
-        $this->block->create(\'' . $block->getIdentifier() . '\', \'' . $this->escaper->escapeJsQuote($block->getTitle()) . '\', '
-                . '\'' . $block->getContent() . '\', $extraData);
+        $this->block->create(\'' . $block->getIdentifier() . '\', ' . $this->escaper->escapeQuote($block->getTitle()) . ', '
+                . $block->getContent() . ', $extraData);
 ';
         } elseif ($options->getMigrationOperation() == BluefootGenerator::OPERATION_UPDATE) {
             $code = '
-        $this->block->update(\'' . $block->getIdentifier() . '\', \'' . $block->getContent() . '\', $extraData);
+        $this->block->update(\'' . $block->getIdentifier() . '\', ' . $block->getContent() . ', $extraData);
 ';
         }
         return $code;

@@ -5,7 +5,7 @@ namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use SomethingDigital\Migration\Model\Cms\PageRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Escaper;
+use SomethingDigital\Migration\Model\Migration\Generator\Escaper;
 
 class Page implements GeneratorInterface
 {
@@ -94,7 +94,7 @@ class Page implements GeneratorInterface
     {
         // make quotation for content here because $this->bluefootEntityGenerator->makeCode() returns content
         // concatenated with php-variables
-        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($this->escaper->escapeJsQuote($page->getContent()), $options);
+        list($content, $bluefootEntitiesCode) = $this->bluefootEntityGenerator->makeCode($this->escaper->escapeQuote($page->getContent()), $options);
         // update page content to display it in generated code, do not save it
         $page->setContent($content);
         return $bluefootEntitiesCode;
@@ -110,17 +110,17 @@ class Page implements GeneratorInterface
     {
         return '
         $extraData = [
-            \'title\' => \'' . $this->escaper->escapeJsQuote($page->getTitle()) . '\',
-            \'page_layout\' => \'' . $page->getPageLayout() . '\',
-            \'meta_title\' => \'' . $this->escaper->escapeJsQuote($page->getMetaTitle()) . '\',
-            \'meta_keywords\' => \'' . $this->escaper->escapeJsQuote($page->getMetaKeywords()) . '\',
-            \'meta_description\' => \'' . $this->escaper->escapeJsQuote($page->getMetaDescription()) . '\',
-            \'content_heading\' => \'' . $this->escaper->escapeJsQuote($page->getContentHeading()) . '\',
-            \'layout_update_xml\' => \'' . $page->getLayoutUpdateXml() . '\',
-            \'custom_theme\' => \'' . $page->getCustomTheme() . '\',
-            \'custom_root_template\' => \'' . $page->getCustomRootTemplate() . '\',
-            \'is_active\' => \'' . $page->getIsActive() . '\',
-            \'stores\' => [' . implode(',', $page->getStores()) . ']
+            \'title\' => ' . $this->escaper->escapeQuote($page->getTitle()) . ',
+            \'page_layout\' => ' . $this->escaper->escapeQuote($page->getPageLayout()) . ',
+            \'meta_title\' => ' . $this->escaper->escapeQuote($page->getMetaTitle()) . ',
+            \'meta_keywords\' => ' . $this->escaper->escapeQuote($page->getMetaKeywords()) . ',
+            \'meta_description\' => ' . $this->escaper->escapeQuote($page->getMetaDescription()) . ',
+            \'content_heading\' => ' . $this->escaper->escapeQuote($page->getContentHeading()) . ',
+            \'layout_update_xml\' => ' . $this->escaper->escapeQuote($page->getLayoutUpdateXml()) . ',
+            \'custom_theme\' => ' . $this->escaper->escapeQuote($page->getCustomTheme()) . ',
+            \'custom_root_template\' => ' . $this->escaper->escapeQuote($page->getCustomRootTemplate()) . ',
+            \'is_active\' => ' . (int) $page->getIsActive() . ',
+            \'stores\' => [' . implode(', ', $page->getStores()) . ']
         ];
 ';
     }
@@ -134,15 +134,16 @@ class Page implements GeneratorInterface
      */
     protected function makePageCode($page, $options)
     {
+        // $page->getContent() contains already escaped string, it also wrapped with single quotes
         $code = '';
         if ($options->getMigrationOperation() == BluefootGenerator::OPERATION_CREATE) {
             $code = '
-        $this->page->create(\'' . $page->getIdentifier() . '\', \'' . $this->escaper->escapeJsQuote($page->getTitle()) . '\', '
-                . '\'' . $page->getContent() . '\', $extraData);
+        $this->page->create(\'' . $page->getIdentifier() . '\', ' . $this->escaper->escapeQuote($page->getTitle()) . ', '
+                . $page->getContent() . ', $extraData);
 ';
         } elseif ($options->getMigrationOperation() == BluefootGenerator::OPERATION_UPDATE) {
             $code = '
-        $this->page->update(\'' . $page->getIdentifier() . '\', \'' . $page->getContent() . '\', $extraData);
+        $this->page->update(\'' . $page->getIdentifier() . '\', ' . $page->getContent() . ', $extraData);
 ';
         }
         return $code;

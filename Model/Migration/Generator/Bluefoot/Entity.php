@@ -5,7 +5,7 @@ namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use Gene\BlueFoot\Api\EntityRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Escaper;
+use SomethingDigital\Migration\Model\Migration\Generator\Escaper;
 
 class Entity
 {
@@ -56,7 +56,7 @@ class Entity
      */
     protected function parseContent($content)
     {
-        if (!preg_match_all('/\"entityId\"\:\"(\d*)\"/Uim', $content, $matches)) {
+        if (!preg_match_all('/\"entityId\"\:\"(\d+?)\"/m', $content, $matches)) {
             return [];
         }
         if (!isset($matches[1])) {
@@ -93,7 +93,7 @@ class Entity
                     continue;
                 }
                 $code .= '
-            \'' . $key . '\' => \'' . $this->escaper->escapeJsQuote($value) . '\',';
+            \'' . $key . '\' => ' . $this->escaper->escapeQuote($value) . ',';
             }
             $code .= '
         ];
@@ -125,7 +125,7 @@ class Entity
                     continue;
                 }
                 $code .= '
-            \'' . $key . '\' => \'' . $this->escaper->escapeJsQuote($value) . '\',';
+            \'' . $key . '\' => ' . $this->escaper->escapeQuote($value) . ',';
             }
             $code .= '
             \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
