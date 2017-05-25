@@ -32,18 +32,13 @@ class Entity
      * @param string $content
      * @param \Magento\Framework\DataObject $options
      * @return array
-     * @throws \InvalidArgumentException
      */
     public function makeCode($content, $options)
     {
         $bluefootEntities = $this->parseContent($content);
-
-        if ($options->getMigrationOperation() == BluefootGenerator::OPERATION_CREATE) {
-            return $this->makeCreateCode($bluefootEntities, $content);
-        } elseif ($options->getMigrationOperation() == BluefootGenerator::OPERATION_UPDATE) {
-            return $this->makeUpdateCode($bluefootEntities, $content);
-        }
-        throw new \InvalidArgumentException("Unknown migration bluefoot operation: '{$options->getCmsEntityType()}'. Could be 'create' or 'update'.");
+        // Always generate "create" code for bluefoot entities. Obviously the same cms block/page may have
+        // different bluefoot entity IDs on different environments (dev, staging, production)
+        return $this->makeCreateCode($bluefootEntities, $content);
     }
 
     /**
