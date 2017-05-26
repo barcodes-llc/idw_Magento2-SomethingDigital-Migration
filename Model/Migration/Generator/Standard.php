@@ -1,14 +1,15 @@
 <?php
 
-namespace SomethingDigital\Migration\Model\Migration;
+namespace SomethingDigital\Migration\Model\Migration\Generator;
 
-use Magento\Framework\Filesystem\Directory\Write as DirWrite;
-use Magento\Framework\Filesystem\Directory\WriteFactory as DirWriteFactory;
+use SomethingDigital\Migration\Model\Migration\GeneratorInterface;
 use SomethingDigital\Migration\Model\AbstractGenerator;
 
-class Generator extends AbstractGenerator
+class Standard extends AbstractGenerator implements GeneratorInterface
 {
-    public function create($namespace, $filePath, $name)
+    const NAME = 'standard';
+
+    public function create($namespace, $filePath, $name, \Magento\Framework\DataObject $options)
     {
         $code = $this->makeCode($namespace, $name);
         $this->writeCode($filePath, $name, $code);

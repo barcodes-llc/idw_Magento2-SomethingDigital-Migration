@@ -2,7 +2,7 @@
 
 namespace SomethingDigital\Migration\Helper\Cms;
 
-use Magento\Cms\Api\PageRepositoryInterface;
+use SomethingDigital\Migration\Model\Cms\PageRepository;
 use Magento\Cms\Api\Data\PageInterface;
 use Magento\Cms\Api\Data\PageInterfaceFactory as PageFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -26,7 +26,7 @@ class Page extends AbstractHelper
     protected $searchCriteriaBuilder;
 
     public function __construct(
-        PageRepositoryInterface $pageRepo,
+        PageRepository $pageRepo,
         PageFactory $pageFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         StoreManagerInterface $storeManager
@@ -98,7 +98,7 @@ class Page extends AbstractHelper
     {
         $page = $this->find($identifier, $storeId);
         if ($page === null) {
-            throw new UsageException(__('Page %s was not found', $identifier));
+            throw new UsageException(__('Page %1 was not found', $identifier));
         }
 
         $this->withStore($storeId, function () use ($page, $title) {
@@ -120,7 +120,7 @@ class Page extends AbstractHelper
         $storeId = isset($extra['store_id']) ? $extra['store_id'] : Store::ADMIN_CODE;
         $page = $this->find($identifier, $storeId);
         if ($page === null) {
-            throw new UsageException(__('Page %s was not found', $identifier));
+            throw new UsageException(__('Page %1 was not found', $identifier));
         }
 
         $this->withStore($storeId, function () use ($page, $content, $extra) {
@@ -150,7 +150,7 @@ class Page extends AbstractHelper
         $page = $this->find($identifier, $storeId);
         if ($page === null) {
             if ($requireExists) {
-                throw new UsageException(__('Page %s was not found', $identifier));
+                throw new UsageException(__('Page %1 was not found', $identifier));
             }
             return;
         }
@@ -179,7 +179,7 @@ class Page extends AbstractHelper
         if ($count == 0) {
             return null;
         } elseif ($count > 1) {
-            throw new UsageException('Found multiple matching pages.');
+            throw new UsageException(__('Found multiple matching pages.'));
         }
 
         foreach ($results->getItems() as $page) {
