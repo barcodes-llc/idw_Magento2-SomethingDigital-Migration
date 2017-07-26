@@ -22,6 +22,7 @@ class General implements ParserInterface
         $result->setModule($input->getOption('module'));
         $result->setType($input->getOption('type'));
         $result->setName($input->getArgument('name'));
+        $result->setDry($input->getOption('dry'));
         $result->setGenerator(GeneratorStandard::NAME);
         return $result;
     }

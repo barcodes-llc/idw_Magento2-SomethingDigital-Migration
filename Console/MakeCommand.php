@@ -48,6 +48,7 @@ class MakeCommand extends Command
         $this->addOption('create-from-page', null, InputOption::VALUE_OPTIONAL, 'Identifier of cms-page to create');
         $this->addOption('update-from-page', null, InputOption::VALUE_OPTIONAL, 'Identifier of cms-page to update');
         $this->addOption('type', null, InputOption::VALUE_OPTIONAL, 'Type: data or schema', 'data');
+        $this->addOption('dry', null, InputOption::VALUE_NONE, 'Skip actual class creation');
         $this->addArgument('name', InputArgument::REQUIRED, 'Name to generate');
 
         parent::configure();
@@ -80,12 +81,12 @@ class MakeCommand extends Command
 
     protected function generateRecurring($options)
     {
-        if ($this->setupGenerator->exists($options->getModule(), $options->getType())) {
+        if ($this->setupGenerator->exists($options)) {
             // Don't need to generate anything.
             return false;
         }
 
-        $this->setupGenerator->create($options->getModule(), $options->getType());
+        $this->setupGenerator->create($options);
         return true;
     }
 }

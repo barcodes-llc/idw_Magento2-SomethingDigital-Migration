@@ -2,6 +2,7 @@
 
 namespace SomethingDigital\Migration\Model\Setup;
 
+use Magento\Framework\DataObject;
 use Magento\Framework\Filesystem\Directory\Read as DirRead;
 use Magento\Framework\Filesystem\Directory\ReadFactory as DirReadFactory;
 use Magento\Framework\Filesystem\Directory\WriteFactory as DirWriteFactory;
@@ -23,21 +24,21 @@ class Generator extends AbstractGenerator
         $this->moduleDirReader = $moduleDirReader;
     }
 
-    public function exists($moduleName, $type)
+    public function exists(DataObject $options)
     {
-        $path = $this->getPath($moduleName);
-        $filename = $this->getTypePathComponent($type) . '.php';
+        $path = $this->getPath($options->getModule());
+        $filename = $this->getTypePathComponent($options->getType()) . '.php';
 
         /** @var DirRead $dirRead */
         $dirRead = $this->dirReadFactory->create($path);
         return $dirRead->isExist($filename);
     }
 
-    public function create($moduleName, $type)
+    public function create(DataObject $options)
     {
-        $filePath = $this->getPath($moduleName);
-        $namespace = $this->getClassNamespacePath($moduleName);
-        $name = $this->getTypePathComponent($type);
+        $filePath = $this->getPath($options->getModule());
+        $namespace = $this->getClassNamespacePath($options->getModule());
+        $name = $this->getTypePathComponent($options->getType());
 
         if ($type === 'data') {
             $code = $this->makeDataCode($namespace, $name, $moduleName);
@@ -46,10 +47,14 @@ class Generator extends AbstractGenerator
         } else {
             // Yes, we already checked this in getTypePathComponent,
             // but we want an exception anywhere we forgot to add a type.
-            throw new \UnexpectedValueException('Unexpected migration type parameter: ' . $type);
+            throw new \UnexpectedValueException('Unexpected migration type parameter: ' . $options->getType());
         }
 
-        $this->writeCode($filePath, $name, $code);
+        if ($options->getDry()) {
+            $this->logCode($filePath, $name, $code);
+        } else {
+            $this->writeCode($filePath, $name, $code);
+        }
     }
 
     protected function getPath($moduleName)
