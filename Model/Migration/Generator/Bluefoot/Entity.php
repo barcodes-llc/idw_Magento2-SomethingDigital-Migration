@@ -2,9 +2,11 @@
 
 namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 
-use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use Gene\BlueFoot\Api\EntityRepositoryInterface;
+use Magento\Eav\Model\Entity\Attribute\AttributeInterface;
+use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use SomethingDigital\Migration\Model\Migration\Generator\Escaper;
 
 class Entity
@@ -12,15 +14,18 @@ class Entity
     protected $bluefootEntityRepo;
     protected $searchCriteriaBuilder;
     protected $escaper;
+    protected $attributeSetFactory;
 
     public function __construct(
         EntityRepositoryInterface $bluefootEntityRepo,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        Escaper $escaper
+        Escaper $escaper,
+        AttributeSetFactory $attributeSetFactory
     ) {
         $this->bluefootEntityRepo = $bluefootEntityRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->escaper = $escaper;
+        $this->attributeSetFactory = $attributeSetFactory;
     }
 
     /**
@@ -88,7 +93,7 @@ class Entity
                     continue;
                 }
                 $code .= '
-            \'' . $key . '\' => ' . $this->escaper->escapeQuote($value) . ',';
+            \'' . $key . '\' => ' . $this->makeValueCode($bluefootEntity, $key, $value) . ',';
             }
             $code .= '
         ];
@@ -120,7 +125,7 @@ class Entity
                     continue;
                 }
                 $code .= '
-            \'' . $key . '\' => ' . $this->escaper->escapeQuote($value) . ',';
+            \'' . $key . '\' => ' . $this->makeValueCode($bluefootEntity, $key, $value) . ',';
             }
             $code .= '
             \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
@@ -129,5 +134,41 @@ class Entity
 ';
         }
         return [$content, $code];
+    }
+
+    protected function makeValueCode($bluefootEntity, $key, $value)
+    {
+        if ($key === 'attribute_set_id') {
+            return $this->makeAttributeSetValueCode($value);
+        }
+
+        /** @var \Gene\BlueFoot\Model\Attribute $attribute */
+        $attribute = $bluefootEntity->getResource()->getAttribute($key);
+        if ($attribute->usesSource()) {
+            $map = $this->getAttributeOptionMap($attribute);
+            if (isset($map[$value])) {
+                return '$this->bluefoot->findAttributeOptionValue(' . $this->escaper->escapeQuote($key) . ', ' . $this->escaper->escapeQuote($map[$value]) . ')';
+            }
+        }
+
+        return $this->escaper->escapeQuote($value);
+    }
+
+    protected function makeAttributeSetValueCode($value)
+    {
+        $attributeSet = $this->attributeSetFactory->create()->load($value);
+        $name = $attributeSet->getAttributeSetName();
+
+        return '$this->bluefoot->findAttributeSetId(' . $this->escaper->escapeQuote($name) . ')';
+    }
+
+    protected function getAttributeOptionMap(AttributeInterface $attribute)
+    {
+        $map = [];
+        foreach ($attribute->getOptions() as $opt) {
+            $map[$opt->getValue()] = (string)$opt->getLabel();
+        }
+
+        return $map;
     }
 }
