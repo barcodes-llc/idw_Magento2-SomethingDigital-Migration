@@ -2,9 +2,10 @@
 
 namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 
-use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
-use SomethingDigital\Migration\Model\Cms\BlockRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use SomethingDigital\Migration\Exception\UsageException;
+use SomethingDigital\Migration\Model\Cms\BlockRepository;
+use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use SomethingDigital\Migration\Model\Migration\Generator\Escaper;
 
 class Block implements GeneratorInterface
