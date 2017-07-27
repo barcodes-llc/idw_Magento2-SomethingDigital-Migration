@@ -22,4 +22,9 @@ abstract class AbstractGenerator
         $file->write($code);
         $file->close();
     }
+
+    protected function logCode($filePath, $name, $code)
+    {
+        fprintf(STDERR, "Generating %s...\n%s\n\n", $name, $code);
+    }
 }

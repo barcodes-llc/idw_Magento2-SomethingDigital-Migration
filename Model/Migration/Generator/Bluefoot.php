@@ -2,6 +2,7 @@
 
 namespace SomethingDigital\Migration\Model\Migration\Generator;
 
+use Magento\Framework\DataObject;
 use SomethingDigital\Migration\Model\Migration\GeneratorInterface;
 use SomethingDigital\Migration\Model\AbstractGenerator;
 use Magento\Framework\Filesystem\Directory\WriteFactory as DirWriteFactory;
@@ -26,10 +27,14 @@ class Bluefoot extends AbstractGenerator implements GeneratorInterface
         parent::__construct($dirWriteFactory);
     }
 
-    public function create($namespace, $filePath, $name, \Magento\Framework\DataObject $options)
+    public function create($namespace, $filePath, $name, DataObject $options)
     {
         $code = $this->makeCode($namespace, $name, $options);
-        $this->writeCode($filePath, $name, $code);
+        if ($options->getDry()) {
+            $this->logCode($filePath, $name, $code);
+        } else {
+            $this->writeCode($filePath, $name, $code);
+        }
     }
 
     /**
