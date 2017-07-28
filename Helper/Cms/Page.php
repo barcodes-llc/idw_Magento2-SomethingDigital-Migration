@@ -133,6 +133,12 @@ class Page extends AbstractHelper
             if (isset($extra['custom_root_template'])) {
                 $page->setCustomRootTemplate($extra['custom_root_template']);
             }
+            if (isset($extra['title'])) {
+                $page->setTitle($title);
+            }
+            if (isset($extra['content_heading'])) {
+                $page->setContentHeading($extra['content_heading']);
+            }
             $this->pageRepo->save($page);
         });
     }
