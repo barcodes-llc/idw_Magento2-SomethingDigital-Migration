@@ -134,7 +134,7 @@ class Page extends AbstractHelper
                 $page->setCustomRootTemplate($extra['custom_root_template']);
             }
             if (isset($extra['title'])) {
-                $page->setTitle($title);
+                $page->setTitle($extra['title']);
             }
             if (isset($extra['content_heading'])) {
                 $page->setContentHeading($extra['content_heading']);
