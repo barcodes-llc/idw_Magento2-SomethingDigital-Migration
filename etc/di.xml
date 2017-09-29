@@ -14,7 +14,6 @@
         <arguments>
             <argument name="parsers" xsi:type="array">
                 <item name="general" xsi:type="string">SomethingDigital\Migration\Console\Input\Parser\General</item>
-                <item name="bluefoot" xsi:type="string">SomethingDigital\Migration\Console\Input\Parser\Bluefoot</item>
             </argument>
         </arguments>
     </type>
@@ -22,7 +21,6 @@
         <arguments>
             <argument name="generators" xsi:type="array">
                 <item name="standard" xsi:type="string">SomethingDigital\Migration\Model\Migration\Generator\Standard</item>
-                <item name="bluefoot" xsi:type="string">SomethingDigital\Migration\Model\Migration\Generator\Bluefoot</item>
             </argument>
         </arguments>
     </type>
