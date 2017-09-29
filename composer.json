@@ -7,8 +7,7 @@
     "magento/module-cms": "^101.0.0",
     "magento/module-eav": "^100.1.0",
     "magento/module-email": "^100.1.0",
-    "magento/module-store": "^100.1.0",
-    "gene/bluefoot": "^1.0.30"
+    "magento/module-store": "^100.1.0"
   },
   "type": "magento2-module",
   "version": "1.2.4",
