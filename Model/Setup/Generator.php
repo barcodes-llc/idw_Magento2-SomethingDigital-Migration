@@ -40,9 +40,9 @@ class Generator extends AbstractGenerator
         $namespace = $this->getClassNamespacePath($options->getModule());
         $name = $this->getTypePathComponent($options->getType());
 
-        if ($type === 'data') {
+        if ($options->getType() === 'data') {
             $code = $this->makeDataCode($namespace, $name, $moduleName);
-        } elseif ($type === 'schema') {
+        } elseif ($options->getType() === 'schema') {
             $code = $this->makeSchemaCode($namespace, $name, $moduleName);
         } else {
             // Yes, we already checked this in getTypePathComponent,
