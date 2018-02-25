@@ -16,13 +16,44 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MakeCommand extends Command
 {
+    /**
+     * @var ChristenerFactory
+     */
     protected $christenerFactory;
+
+    /**
+     * @var Christener
+     */
     protected $christener;
+
+    /**
+     * @var Locator
+     */
     protected $locator;
+
+    /**
+     * @var SetupGenerator
+     */
     protected $setupGenerator;
+
+    /**
+     * @var InputParserPool
+     */
     protected $inputParserPool;
+
+    /**
+     * @var MigrationGeneratorPool
+     */
     protected $migrationGeneratorPool;
 
+    /**
+     * MakeCommand constructor.
+     * @param ChristenerFactory $christenerFactory
+     * @param Locator $locator
+     * @param SetupGenerator $setupGenerator
+     * @param InputParserPool $inputParserPool
+     * @param MigrationGeneratorPool $migrationGeneratorPool
+     */
     public function __construct(
         ChristenerFactory $christenerFactory,
         Locator $locator,
@@ -56,6 +87,11 @@ class MakeCommand extends Command
         parent::configure();
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $options = $this->inputParserPool->parse($input);
@@ -69,6 +105,10 @@ class MakeCommand extends Command
         return 0;
     }
 
+    /**
+     * @param \Magento\Framework\DataObject $options
+     * @return string
+     */
     protected function generateMigration($options)
     {
         $name = $this->getChristener()->christen($options->getName());
@@ -81,6 +121,10 @@ class MakeCommand extends Command
         return $filePath . '/' . $name . '.php';
     }
 
+    /**
+     * @param \Magento\Framework\DataObject $options
+     * @return bool
+     */
     protected function generateRecurring($options)
     {
         if ($this->setupGenerator->exists($options)) {
@@ -92,6 +136,9 @@ class MakeCommand extends Command
         return true;
     }
 
+    /**
+     * @return Christener
+     */
     protected function getChristener()
     {
         if ($this->christener) {
