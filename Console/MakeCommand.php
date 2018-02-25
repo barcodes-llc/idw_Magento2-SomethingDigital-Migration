@@ -2,6 +2,7 @@
 
 namespace SomethingDigital\Migration\Console;
 
+use SomethingDigital\Migration\Model\Migration\ChristenerFactory;
 use SomethingDigital\Migration\Model\Migration\Christener;
 use SomethingDigital\Migration\Model\Migration\Locator;
 use SomethingDigital\Migration\Model\Setup\Generator as SetupGenerator;
@@ -15,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MakeCommand extends Command
 {
+    protected $christenerFactory;
     protected $christener;
     protected $locator;
     protected $setupGenerator;
@@ -22,7 +24,7 @@ class MakeCommand extends Command
     protected $migrationGeneratorPool;
 
     public function __construct(
-        Christener $christener,
+        ChristenerFactory $christenerFactory,
         Locator $locator,
         SetupGenerator $setupGenerator,
         InputParserPool $inputParserPool,
@@ -30,7 +32,7 @@ class MakeCommand extends Command
     ) {
         parent::__construct(null);
 
-        $this->christener = $christener;
+        $this->christenerFactory = $christenerFactory;
         $this->locator = $locator;
         $this->setupGenerator = $setupGenerator;
         $this->inputParserPool = $inputParserPool;
@@ -69,7 +71,7 @@ class MakeCommand extends Command
 
     protected function generateMigration($options)
     {
-        $name = $this->christener->christen($options->getName());
+        $name = $this->getChristener()->christen($options->getName());
         $filePath = $this->locator->getFilesPath($options->getModule(), $options->getType());
         $namespace = $this->locator->getClassNamespacePath($options->getModule(), $options->getType());
 
@@ -88,5 +90,16 @@ class MakeCommand extends Command
 
         $this->setupGenerator->create($options);
         return true;
+    }
+
+    protected function getChristener()
+    {
+        if ($this->christener) {
+            return $this->christener;
+        }
+
+        $this->christener = $this->christenerFactory->create();
+
+        return $this->christener;
     }
 }
