@@ -128,7 +128,7 @@ class Entity
             \'' . $key . '\' => ' . $this->makeValueCode($bluefootEntity, $key, $value) . ',';
             }
             $code .= '
-            \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
+            \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT),
         ];
         $this->bluefoot->update(' . $bluefootEntity->getId() . ', $data' . $bluefootEntity->getId() . ');
 ';
