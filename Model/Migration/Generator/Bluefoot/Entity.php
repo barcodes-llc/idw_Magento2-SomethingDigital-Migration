@@ -3,9 +3,14 @@
 namespace SomethingDigital\Migration\Model\Migration\Generator\Bluefoot;
 
 use Gene\BlueFoot\Api\EntityRepositoryInterface;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Eav\Model\Entity\Attribute\AttributeInterface;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\State;
+use Magento\Framework\Exception\NoSuchEntityException;
+use SomethingDigital\Migration\Model\Cms\BlockRepository;
 use SomethingDigital\Migration\Model\Migration\Generator\Bluefoot as BluefootGenerator;
 use SomethingDigital\Migration\Model\Migration\Generator\Escaper;
 
@@ -15,17 +20,29 @@ class Entity
     protected $searchCriteriaBuilder;
     protected $escaper;
     protected $attributeSetFactory;
+    protected $categoryRepo;
+    protected $productRepo;
+    protected $blockRepo;
+    protected $state;
 
     public function __construct(
         EntityRepositoryInterface $bluefootEntityRepo,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         Escaper $escaper,
-        AttributeSetFactory $attributeSetFactory
+        AttributeSetFactory $attributeSetFactory,
+        CategoryRepositoryInterface $categoryRepo,
+        ProductRepositoryInterface $productRepo,
+        BlockRepository $blockRepo,
+        State $state
     ) {
         $this->bluefootEntityRepo = $bluefootEntityRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->escaper = $escaper;
         $this->attributeSetFactory = $attributeSetFactory;
+        $this->categoryRepo = $categoryRepo;
+        $this->productRepo = $productRepo;
+        $this->blockRepo = $blockRepo;
+        $this->state = $state;
     }
 
     /**
@@ -128,7 +145,7 @@ class Entity
             \'' . $key . '\' => ' . $this->makeValueCode($bluefootEntity, $key, $value) . ',';
             }
             $code .= '
-            \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
+            \'updated_at\' => gmdate(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT),
         ];
         $this->bluefoot->update(' . $bluefootEntity->getId() . ', $data' . $bluefootEntity->getId() . ');
 ';
@@ -151,6 +168,24 @@ class Entity
             }
         }
 
+        $widget = $attribute->getWidget();
+        if ($widget === 'search/product') {
+            $sku = $this->getProductSku($value);
+            if ($sku) {
+                return '$this->bluefoot->findProductId(' . $this->escaper->escapeQuote($sku) . ')';
+            }
+        } elseif ($widget === 'search/category') {
+            $path = $this->getCategoryPath($value);
+            if ($path) {
+                return '$this->bluefoot->findCategoryId(' . $this->escaper->escapeQuote($path) . ')';
+            }
+        } elseif ($widget === 'search/staticblock') {
+            $identifier = $this->getStaticBlockIdentifier($value);
+            if ($identifier) {
+                return '$this->bluefoot->findStaticBlockId(' . $this->escaper->escapeQuote($identifier) . ')';
+            }
+        }
+
         return $this->escaper->escapeQuote($value);
     }
 
@@ -170,5 +205,41 @@ class Entity
         }
 
         return $map;
+    }
+
+    protected function getProductSku($entityId)
+    {
+        try {
+            return $this->state->emulateAreaCode('adminhtml', function ($entityId) {
+                $product = $this->productRepo->getById($entityId);
+                return $product->getSku();
+            }, [$entityId]);
+        } catch (NoSuchEntityException $e) {
+            return null;
+        }
+    }
+
+    protected function getCategoryPath($entityId)
+    {
+        try {
+            $category = $this->categoryRepo->get($entityId);
+            $attr = $category->getCustomAttribute('url_path');
+            if ($attr !== null) {
+                return $attr->getValue();
+            }
+            return null;
+        } catch (NoSuchEntityException $e) {
+            return null;
+        }
+    }
+
+    protected function getStaticBlockIdentifier($blockId)
+    {
+        try {
+            $block = $this->blockRepo->getById($blockId);
+            return $block->getIdentifier();
+        } catch (NoSuchEntityException $e) {
+            return null;
+        }
     }
 }
