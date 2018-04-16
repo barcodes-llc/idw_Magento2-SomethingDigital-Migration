@@ -139,6 +139,9 @@ class Page extends AbstractHelper
             if (isset($extra['content_heading'])) {
                 $page->setContentHeading($extra['content_heading']);
             }
+            if (isset($extra['page_layout'])) {
+                $page->setPageLayout($extra['page_layout']);
+            }
             $this->pageRepo->save($page);
         });
     }
