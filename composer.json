@@ -3,14 +3,14 @@
   "description": "Utility library to allow migration-style data upgrade scripts.",
   "require": {
     "php": ">= 5.6.0 <7.2.0",
-    "magento/framework": "^100.1.0",
-    "magento/module-cms": "^101.0.0",
-    "magento/module-eav": "^100.1.0",
-    "magento/module-email": "^100.1.0",
-    "magento/module-store": "^100.1.0"
+    "magento/framework": "*",
+    "magento/module-cms": "*",
+    "magento/module-eav": "*",
+    "magento/module-email": "*",
+    "magento/module-store": "*"
   },
   "type": "magento2-module",
-  "version": "1.2.4",
+  "version": "1.4.5",
   "license": "proprietary",
   "autoload": {
     "files": [
