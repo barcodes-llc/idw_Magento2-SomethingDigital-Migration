@@ -40,10 +40,10 @@ class Generator extends AbstractGenerator
         $namespace = $this->getClassNamespacePath($options->getModule());
         $name = $this->getTypePathComponent($options->getType());
 
-        if ($type === 'data') {
-            $code = $this->makeDataCode($namespace, $name, $moduleName);
-        } elseif ($type === 'schema') {
-            $code = $this->makeSchemaCode($namespace, $name, $moduleName);
+        if ($options->getType() === 'data') {
+            $code = $this->makeDataCode($namespace, $name, $options->getModule());
+        } elseif ($options->getType() === 'schema') {
+            $code = $this->makeSchemaCode($namespace, $name, $options->getModule());
         } else {
             // Yes, we already checked this in getTypePathComponent,
             // but we want an exception anywhere we forgot to add a type.

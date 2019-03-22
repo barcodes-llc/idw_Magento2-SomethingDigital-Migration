@@ -24,4 +24,18 @@
             </argument>
         </arguments>
     </type>
+
+    <!-- Workaround for EavSetup and DataSetup -->
+    <!-- (Magento\Setup\Module\DataSetup can't be instantiated when compilation is enabled) -->
+    <virtualType name="SomethingDigital\MigrationProject\Eav\Setup\EavSetup" type="Magento\Eav\Setup\EavSetup">
+        <arguments>
+            <argument name="setup" xsi:type="object">SomethingDigital\MigrationProject\Setup\Module\DataSetup</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="SomethingDigital\MigrationProject\Setup\Module\DataSetup" type="Magento\Setup\Module\DataSetup">
+        <arguments>
+            <argument name="context" xsi:type="object">Magento\Framework\Module\Setup\Context</argument>
+        </arguments>
+    </virtualType>
+    <!-- end workaround -->
 </config>
