@@ -2,7 +2,7 @@
   "name": "somethingdigital/magento2-migration",
   "description": "Utility library to allow migration-style data upgrade scripts.",
   "require": {
-    "php": ">= 5.6.0 <7.2.0",
+    "php": ">= 5.6.0 <8.0.0",
     "magento/framework": "*",
     "magento/module-cms": "*",
     "magento/module-eav": "*",
