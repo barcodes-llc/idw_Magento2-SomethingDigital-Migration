@@ -42,12 +42,16 @@ php bin/magento migrate:make --create-from-page=page_identifier --module=Somethi
 php bin/magento migrate:make --update-from-page=page_identifier --module=SomethingDigital_MyModule CreateFancyPage
 ```
 
-## Helpers
+# Helpers
 The module predefines four helpers:
+
 **$page** - For CMS pages
+
 **$block** - For CMS blocks
+
 **$email** - For Email Templates
-**resourceConfig** - For core_config_data
+
+**$resourceConfig** - For core_config_data
 
 ### PageHelper $page
 
@@ -55,16 +59,16 @@ The module predefines four helpers:
 ```php
 # Call the create function
 $this->page->create(
-  'Identifier', //page identifier, i.e. my-page
+  'identifier', //page identifier, i.e. my-page
   'Title', //Title of the page i.e. My Page
   'content', //Static Page Content goes here i.e. html
   mixed[] // extra parameters you want to set
 );
 ```
 - Extra parameters:
-  - is_active: To set to.
-  - store_id: To set to, and also for lookup on update.
-  - custom_root_template: Design root template.
+  - is_active
+  - store_id
+  - custom_root_template
 
 ### BlockHelper $block
 
@@ -72,15 +76,15 @@ $this->page->create(
 ```php
 # Call the create function
 $this->block->create(
-  'Identifier', //page identifier, i.e. my-block
+  'identifier', //page identifier, i.e. my-block
   'Title', //Title of the page i.e. My Block
   'content', //Static Block Content goes here i.e. html
   mixed[] // extra parameters you want to set
 );
 ```
 - Extra parameters:
-  - is_active: To set to.
-  - store_id: To set to, and also for lookup on update.
+  - is_active
+  - store_id
 
 ### EmailHelper $email
 
@@ -88,7 +92,7 @@ $this->block->create(
 ```php
 # Call the create function
 $this->email->create(
-  'Identifier', //page identifier, i.e. my-email
+  'identifier', //page identifier, i.e. my-email
   'Subject', //Title of the page i.e. My Email
   'content', //Content i.e. email body
   mixed[] // extra parameters you want to set
@@ -123,7 +127,7 @@ $mixed = [
 }',]
 
 $this->email->create(
-  'Identifier', //page identifier, i.e. my-email
+  'identifier', //page identifier, i.e. my-email
   $subject, //Title of the page i.e. My Email
   $body, //Content i.e. email body
   $mixed // extra parameters you want to set
