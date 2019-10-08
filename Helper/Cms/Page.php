@@ -81,6 +81,9 @@ class Page extends AbstractHelper
             if (isset($extra['custom_root_template'])) {
                 $page->setCustomRootTemplate($extra['custom_root_template']);
             }
+            if (isset($extra['page_layout'])) {
+                $page->setPageLayout($extra['page_layout']);
+            }
 
             $this->pageRepo->save($page);
         });
